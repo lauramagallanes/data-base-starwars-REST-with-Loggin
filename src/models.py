@@ -77,7 +77,7 @@ class User(db.Model):
     email = db.Column(db.String(250), nullable=False)
     password = db.Column(db.String(250), nullable=False)
     username = db.Column(db.String(250), nullable=False)
-    favorito = db.relationship('Favorito', backref='user')
+    
     
     
     def __repr__(self):
@@ -91,7 +91,7 @@ class User(db.Model):
             "email": self.email,
             
             "username": self.username,
-            "favorito": self.favorito
+           
                                    
         }
 

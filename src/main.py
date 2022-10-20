@@ -33,22 +33,50 @@ jwt = JWTManager(app)
 # create_access_token() function is used to actually generate the JWT.
 @app.route("/login", methods=["POST"])
 def login():
-    username = request.json.get("username", None)
+    first_name = request.json.get("first_name", None)
+    last_name = request.json.get("last_name", None)
+    email = request.json.get("email", None)
     password = request.json.get("password", None)
-    if username != "test" or password != "test":
-        return jsonify({"msg": "Bad username or password"}), 401
+    username = request.json.get("username", None)
 
-    access_token = create_access_token(identity=username)
-    return jsonify(access_token=access_token)
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        return jsonify({"msg": "User does not exist"}), 404
+
+
+    if email != user.email or password != user.password:
+        return jsonify({"msg": "Bad email or password"}), 401
+
+    access_token = create_access_token(identity=email)
+
+    response_body = {
+        "access_token": access_token,
+        "user": user.serialize()
+    }
+
+    return jsonify(response_body), 200
 
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
-@app.route("/protected", methods=["GET"])
-@jwt_required()
+@app.route("/profile", methods=["GET"])
+@jwt_required() #es como el portero que permite o no la entrada; verifica si tiene el token
 def protected():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+
+    user = User.query.filter_by(email=current_user).first()
+
+    if user is None:
+        return jsonify({"msg": "User does not exist"}), 404
+
+    response_body = {
+        
+        "user": user.serialize()
+    }
+
+
+    return jsonify(response_body), 200
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
