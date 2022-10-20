@@ -97,8 +97,8 @@ class User(db.Model):
 class Favorito(db.Model): #planeta favorito por usuario;
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"))
-    people_id = db.Column(db.Integer, db.ForeignKey("people.id"))
+    planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"), nullable=True)
+    people_id = db.Column(db.Integer, db.ForeignKey("people.id"), nullable=True)
            
     
     def __repr__(self):

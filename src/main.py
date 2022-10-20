@@ -120,12 +120,13 @@ def get_favorito(user_id):
 
     return jsonify(total_favoritos), 200
 
-# post para crear favoritos para un usuario x
+# post para crear planetas favoritos para un usuario x
 @app.route('/users/<int:user_id>/favoritos/planet', methods=['POST'])
 def create_favorito_planet(user_id):
     body = json.loads(request.data) #aca importo la info que viene del body desde el frontend
     
-    query_favorito_planet = Favorito.query.filter_by(planet_id=body["planet_id"]).first() #aca consulto si el usuario ya tiene este planeta o personaje como favorito
+    query_favorito_planet = Favorito.query.filter_by(planet_id=body["planet_id"], user_id=body["user_id"]).first() 
+    print(query_favorito_planet)#aca consulto si el usuario ya tiene este planeta o personaje como favorito
     
     if query_favorito_planet is None:
         new_favorito_planet = Favorito(user_id=body["user_id"], planet_id=body["planet_id"], people_id=body["people_id"])
@@ -133,7 +134,7 @@ def create_favorito_planet(user_id):
         db.session.commit()
 
         response_body = {
-            "msg": "Created user"
+            "msg": "Created favorite planet"
         }
         return jsonify(response_body), 200
 
@@ -141,6 +142,80 @@ def create_favorito_planet(user_id):
             "msg": "existed favorite planet"
         }
     return jsonify(response_body), 400
+
+
+# post para crear personajes favoritos para un usuario x
+@app.route('/users/<int:user_id>/favoritos/people', methods=['POST'])
+def create_favorito_people(user_id):
+    body = json.loads(request.data) #aca importo la info que viene del body desde el frontend
+    
+    query_favorito_people = Favorito.query.filter_by(people_id=body["people_id"], user_id=body["user_id"]).first() 
+    print(query_favorito_people)#aca consulto si el usuario ya tiene este planeta o personaje como favorito
+    
+    if query_favorito_people is None:
+        new_favorito_people = Favorito(user_id=body["user_id"], planet_id=body["planet_id"], people_id=body["people_id"])
+        db.session.add(new_favorito_people)
+        db.session.commit()
+
+        response_body = {
+            "msg": "Created favorite character"
+        }
+        return jsonify(response_body), 200
+
+    response_body = {
+            "msg": "existed favorite character"
+        }
+    return jsonify(response_body), 400
+
+#ahora hago DELETE para favorite planet:
+@app.route('/users/<int:user_id>/favoritos/planet', methods=['DELETE'])
+def delete_favorito_planet(user_id):
+    body = json.loads(request.data) #aca importo la info que viene del body desde el frontend
+    
+    query_favorito_planet = Favorito.query.filter_by(planet_id=body["planet_id"], user_id=body["user_id"]).first() 
+    print(query_favorito_planet)#aca consulto si el usuario ya tiene este planeta o personaje como favorito
+    
+    if query_favorito_planet is not None:
+        delete_planet_favorito = query_favorito_planet #aca defino cual voy a eliminar
+        db.session.delete(delete_planet_favorito)
+        db.session.commit()
+
+        response_body = {
+            "msg": "Deleted favorite planet"
+        }
+        return jsonify(response_body), 200
+
+    response_body = {
+            "msg": "favorite planet does not exist"
+        }
+    return jsonify(response_body), 400
+
+#ahora hago DELETE para favorite personaje:
+
+@app.route('/users/<int:user_id>/favoritos/people', methods=['DELETE'])
+def delete_favorito_people(user_id):
+    body = json.loads(request.data) #aca importo la info que viene del body desde el frontend
+    
+    query_favorito_people = Favorito.query.filter_by(people_id=body["people_id"], user_id=body["user_id"]).first() 
+    print(query_favorito_people)#aca consulto si el usuario ya tiene este planeta o personaje como favorito
+    
+    if query_favorito_people is not None:
+        delete_people_favorito = query_favorito_people #aca defino cual voy a eliminar
+        db.session.delete(query_favorito_people)
+        db.session.commit()
+
+        response_body = {
+            "msg": "Deleted favorite character"
+        }
+        return jsonify(response_body), 200
+
+    response_body = {
+            "msg": "favorite character does not exist"
+        }
+    return jsonify(response_body), 400
+
+
+
 
 
 
