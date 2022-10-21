@@ -77,6 +77,7 @@ class User(db.Model):
     email = db.Column(db.String(250), nullable=False)
     password = db.Column(db.String(250), nullable=False)
     username = db.Column(db.String(250), nullable=False)
+    favorito = db.relationship('Favorito', backref='user')
     
     
     
@@ -91,8 +92,8 @@ class User(db.Model):
             "email": self.email,
             
             "username": self.username,
-           
-                                   
+            "favorito": self.favorito
+                                              
         }
 
 class Favorito(db.Model): #planeta favorito por usuario;
